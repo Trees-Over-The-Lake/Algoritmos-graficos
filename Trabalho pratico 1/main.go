@@ -17,16 +17,17 @@ func main() {
 	}
 	defer glfw.Terminate()
 
-	window, err := glfw.CreateWindow(640, 480, "Trabalho prático 1", nil, nil)
+	janela, err := glfw.CreateWindow(640, 480, "Trabalho prático 1", nil, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	window.MakeContextCurrent()
+	janela.MakeContextCurrent()
 
-	for !window.ShouldClose() {
+	for !janela.ShouldClose() {
 		// Inicializar janela
-		window.SwapBuffers()
+		janela.SwapBuffers()
 		glfw.PollEvents()
+
 	}
 }
