@@ -1,7 +1,37 @@
 on: [push, pull_request]
-name: Test
+name: Building Application
 jobs:
-  build:
+  upload-release: 
+    name: Release binary to github releases
+    runs-on: [ubuntu-latest, windows-latest]
+    needs: build-project
+    steps:
+      - name: Zipping Project
+        id: zip-project
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          path: './Vulkan*'
+          filename: 'release-${{ matrix.os }}.zip'
+      
+      - name: 
+      
+
+      - name: Create Release
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: Release ${{ github.ref }}
+            body: |
+              Última atualização do projeto!
+              Versão: ${{ github.commitish }}
+            draft: false
+            prerelease: false
+
+  build-project:
     strategy:
       matrix:
         go-version: [1.17]
@@ -9,11 +39,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install Go
-      uses: actions/setup-go@v2
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go-version }}
-    - name: Checkout code
-      uses: actions/checkout@v2
+
+    - name: Bulding application
+      run: go build . 
       
     - uses: actions/cache@v2
       with:
