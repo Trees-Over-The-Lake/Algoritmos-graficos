@@ -57,6 +57,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Downloading necessary libs
+      if: ${{ matrix.os }} == 'ubuntu-latest'
       run: |
         sudo apt update
         sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
