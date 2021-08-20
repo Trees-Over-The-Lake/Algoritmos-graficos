@@ -57,7 +57,7 @@ jobs:
 
     - name: Bulding application
       run: |
-        'cd "Trabalho pratico 1"'
+        'cd TrabalhoPratico1'
         'go build .'
     
     - name: Caching Application
