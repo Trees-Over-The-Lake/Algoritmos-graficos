@@ -14,8 +14,6 @@ jobs:
           path: './Vulkan*'
           filename: 'release-${{ matrix.os }}.zip'
       
-      - name: 
-      
 
       - name: Create Release
           id: create_release
