@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         go-version: [1.17]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -19,26 +19,14 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Downloading necessary libs
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt update
-          sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
-        fi
+    - name: Downloading necessary libs for linux
+      if: runner.os == 'Linux'
+      run: sudo apt update && sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
       shell: bash
         
-
     - name: Bulding application
       run: 'go build .'
-    
-    - name: Caching Application
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-
+  
     - name: Caching Go
       uses: actions/cache@v2
       with:
@@ -103,5 +91,28 @@ jobs:
       with:
         upload_url: ${{ steps.get-release-windows.outputs.upload_url }}
         asset_path: 'vulkan.exe'
-        asset_name: 'release-${{ runner.os }}_amd64.exe'
+        asset_name: 'release-${{ runner.os }}-amd64.exe'
+        asset_content_type: application/octet-stream
+
+      # Uploading MacOS Binary
+    - name: Get latest release
+      if: runner.os == 'macOS'
+      id: get-release-macos
+      uses: joutvhu/get-release@v1
+      with:
+        latest: true
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Upload Release
+      if: runner.os == 'macOS'
+      id: upload-release-macos
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get-release-macos.outputs.upload_url }}
+        asset_path: 'vulkan'
+        asset_name: 'release-${{ runner.os }}-amd64'
         asset_content_type: application/octet-stream
