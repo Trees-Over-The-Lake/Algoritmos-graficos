@@ -58,7 +58,7 @@ jobs:
 
     # Creating a Release in ubuntu   
     - name: Create Release
-      if: ${{ runner.os }} == 'Linux'
+      if: runner.os == 'Linux'
       id: create-release
       uses: actions/create-release@v1
       env:
