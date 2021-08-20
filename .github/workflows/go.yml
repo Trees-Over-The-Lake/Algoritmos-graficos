@@ -7,27 +7,27 @@ jobs:
     runs-on: [ubuntu-latest, windows-latest]
     needs: build-project
     steps:
-      - name: Zipping Project
-        id: zip-project
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          path: './Vulkan*'
-          filename: 'release-${{ matrix.os }}.zip'
-        
+    - name: Zipping Project
+      id: zip-project
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'zip'
+        path: './Vulkan*'
+        filename: 'release-${{ matrix.os }}.zip'
+      
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Última atualização do projeto!
-            Versão: ${{ github.commitish }}
-          draft: false
-          prerelease: false
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Última atualização do projeto!
+          Versão: ${{ github.commitish }}
+        draft: false
+        prerelease: false
 
   build-project:
     strategy:
