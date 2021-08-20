@@ -58,9 +58,11 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
+    - name: Set project dir environment var
+      run: echo ::set-env name=PROJECT_DIR::"$GITHUB_WORKSPACE/${{ env.working_directory }}"
+
     - name: Bulding application
       run: 'ls'
-      working-directory: ${{ env.working_directory }}
     
     - name: Caching Application
       uses: actions/cache@v2
