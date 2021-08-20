@@ -2,43 +2,6 @@ on: [push, pull_request]
 
 name: Building Application
 jobs:
-  uploading-release: 
-    name: Release binary to github releases
-    runs-on: [ubuntu-latest, windows-latest]
-    needs: building-project
-    steps:
-    - name: Zipping Project
-      id: zip-project
-      uses: thedoctor0/zip-release@master
-      with:
-        type: 'zip'
-        path: './Vulkan*'
-        filename: 'release-${{ matrix.os }}.zip'
-      
-    - name: Create Release
-      id: create-release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.run_number }}
-        release_name: Release ${{ github.run_number }}
-        body: |
-          Última atualização do projeto!
-          Versão: ${{ github.commitish }}
-        draft: false
-        prerelease: false
-    
-    - name: Upload Release
-      id: upload-release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: './release-${{ matrix.os }}.zip'
-        asset_name: 'release-${{ matrix.os }}.zip'
-        asset_content_type: application/zip
 
   building-project:
     strategy:
@@ -93,3 +56,36 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
+
+    - name: Zipping Project
+      id: zip-project
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'zip'
+        path: './Vulkan*'
+        filename: 'release-${{ matrix.os }}.zip'
+        
+    - name: Create Release
+      id: create-release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+        body: |
+          Última atualização do projeto!
+          Versão: ${{ github.commitish }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release
+      id: upload-release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: './release-${{ matrix.os }}.zip'
+        asset_name: 'release-${{ matrix.os }}.zip'
+        asset_content_type: application/zip
