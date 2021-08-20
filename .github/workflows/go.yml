@@ -20,7 +20,6 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Downloading necessary libs
-      if: ${{ runner.os }} == 'Linux'
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
           sudo apt update
@@ -56,8 +55,10 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-        
+
+    # Creating a Release in ubuntu   
     - name: Create Release
+      if: ${{ runner.os }} == 'Linux'
       id: create-release
       uses: actions/create-release@v1
       env:
@@ -71,7 +72,9 @@ jobs:
         draft: false
         prerelease: false
     
+    # Uploading Linux Binary
     - name: Upload Release
+      if: ${{ runner.os }} == 'Linux'
       id: upload-release
       uses: actions/upload-release-asset@v1
       env:
@@ -81,3 +84,16 @@ jobs:
         asset_path: 'vulkan'
         asset_name: 'release-${{ runner.os }}.amd64'
         asset_content_type: application/x-executable
+
+    # Uploading Windows Binary
+    - name: Upload Release
+      if: ${{ runner.os }} == 'Windows'
+      id: upload-release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: 'vulkan.exe'
+        asset_name: 'release-${{ runner.os }}_amd64.exe'
+        asset_content_type: application/octet-stream
