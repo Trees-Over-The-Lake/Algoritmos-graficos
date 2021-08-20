@@ -90,6 +90,8 @@ jobs:
       if: runner.os == 'Windows'
       id: get-release-windows
       uses: joutvhu/get-release@v1
+      with:
+        debug: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
