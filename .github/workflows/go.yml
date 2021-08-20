@@ -56,6 +56,9 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
+    - name: Downloading necessary libs
+      run: sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
+
     - name: Bulding application
       run: 'go build .'
     
