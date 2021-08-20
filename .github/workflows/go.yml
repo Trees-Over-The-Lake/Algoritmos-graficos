@@ -60,8 +60,8 @@ jobs:
       if: ${{ runner.os }} == 'Linux'
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
-          apt update
-          apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
+          sudo apt update
+          sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
         fi
       shell: bash
         
