@@ -58,7 +58,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Bulding application
-      run: 'go build .'
+      run: 'ls'
       working-directory: ${{ env.working_directory }}
     
     - name: Caching Application
