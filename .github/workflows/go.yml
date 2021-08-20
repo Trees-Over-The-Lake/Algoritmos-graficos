@@ -86,6 +86,13 @@ jobs:
         asset_content_type: application/x-executable
 
     # Uploading Windows Binary
+    - name: Get latest release
+      if: runner.os == "Windows"
+      id: get-release-windows
+      uses: bruceadams/get-release@v1.2.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: Upload Release
       if: runner.os == 'Windows'
       id: upload-release-windows
@@ -93,7 +100,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        upload_url: ${{ steps.get-release-windows.outputs.upload_url }}
         asset_path: 'vulkan.exe'
         asset_name: 'release-${{ runner.os }}_amd64.exe'
         asset_content_type: application/octet-stream
