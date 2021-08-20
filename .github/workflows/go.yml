@@ -66,9 +66,7 @@ jobs:
       with:
         tag_name: ${{ github.run_number }}
         release_name: Release ${{ github.run_number }}
-        body: |
-          Última atualização do projeto!
-          Versão: ${{ github.commitish }}
+        body: Última atualização do projeto!
         draft: false
         prerelease: false
     
@@ -83,7 +81,7 @@ jobs:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: 'vulkan'
         asset_name: 'release-${{ runner.os }}.amd64'
-        asset_content_type: application/x-executable
+        asset_content_type: application/octet-stream
 
     # Uploading Windows Binary
     - name: Get latest release
