@@ -59,8 +59,12 @@ jobs:
     - name: Downloading necessary libs
       if: ${{ runner.os }} == 'Linux'
       run: |
-        sudo apt update
-        sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          apt update
+          apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
+        fi
+      shell: bash
+        
 
     - name: Bulding application
       run: 'go build .'
