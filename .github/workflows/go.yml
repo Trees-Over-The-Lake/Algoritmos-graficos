@@ -48,7 +48,7 @@ jobs:
       run: go build . 
     
     - name: Caching Application
-    - uses: actions/cache@v2
+      uses: actions/cache@v2
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -56,7 +56,7 @@ jobs:
           ${{ runner.os }}-go-
 
     - name: Caching Go
-    - uses: actions/cache@v2
+      uses: actions/cache@v2
       with:
         # In order:
         # * Module download cache
