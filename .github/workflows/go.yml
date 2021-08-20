@@ -47,7 +47,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
-      working-directory: 'Trabalho pratico 1'
+      working-directory: './Trabalho pratico 1'
+
     steps:
     - name: Install Go
       uses: actions/checkout@v2
