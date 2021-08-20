@@ -74,7 +74,7 @@ jobs:
     
     # Uploading Linux Binary
     - name: Upload Release
-      if: ${{ runner.os }} == 'Linux'
+      if: runner.os == 'Linux'
       id: upload-release-linux
       uses: actions/upload-release-asset@v1
       env:
@@ -87,7 +87,7 @@ jobs:
 
     # Uploading Windows Binary
     - name: Upload Release
-      if: ${{ runner.os }} == 'Windows'
+      if: runner.os == 'Windows'
       id: upload-release-windows
       uses: actions/upload-release-asset@v1
       env:
