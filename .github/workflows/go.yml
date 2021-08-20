@@ -56,7 +56,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Bulding application
-      run: go build main.go
+      run: ls
     
     - name: Caching Application
       uses: actions/cache@v2
