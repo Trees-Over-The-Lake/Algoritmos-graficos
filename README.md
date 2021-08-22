@@ -1,2 +1,3 @@
-# Algoritmos-graficos-em-Vulkan
+# Algoritmos Gráficos
+
 Repositório dedicado à disciplina de computação gráfica PUCMG
