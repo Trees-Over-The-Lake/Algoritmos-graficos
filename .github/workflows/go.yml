@@ -35,7 +35,7 @@ jobs:
 
     - name: Downloading necessary libs for linux
       if: runner.os == 'Linux'
-      run: sudo apt update && sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev -y
+      run: sudo apt update && sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev xorg-dev libsdl2-dev -y
       shell: bash
         
     - name: Bulding application
