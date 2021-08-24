@@ -1,6 +1,9 @@
 package main
 
 import (
+	"graphics_algorithms/refresh"
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -42,6 +45,8 @@ func main() {
 		if estado&sdl.Button(sdl.BUTTON_LEFT) == 0 {
 			superficie.FillRect(nil, 0)
 		}
+
+		time.Sleep(time.Duration(refresh.RefreshRate(75)))
 	}
 }
 
