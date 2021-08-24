@@ -1,6 +1,7 @@
 package main
 
 import (
+	"graphics_algorithms/algorithms"
 	"graphics_algorithms/refresh"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -13,7 +14,7 @@ func main() {
 	defer sdl.Quit()
 
 	janela, err := sdl.CreateWindow("Trabalho prático 1", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED,
-		800, 600, sdl.WINDOW_SHOWN)
+		1280, 720, sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}
@@ -40,23 +41,12 @@ func main() {
 		// Pegando a posição do mouse na tela
 		mouseX, mouseY, estado := sdl.GetMouseState()
 
-		DesenharPontoBranco(janela, superficie, mouseX, mouseY)
-		if estado&sdl.Button(sdl.BUTTON_LEFT) == 0 {
+		if estado&sdl.Button(sdl.BUTTON_LEFT) == 1 {
 			superficie.FillRect(nil, 0)
+			algorithms.Brensenhan(janela, superficie, 50, 50, int(mouseX), int(mouseY))
 		}
 
 		// Sincronização vertical do monitor com a aplicação
 		refresh.Vsync(janela)
 	}
-}
-
-// Retornar um ponto branco
-func DesenharPontoBranco(janela *sdl.Window, superficie *sdl.Surface, X int32, Y int32) {
-	superficie.FillRect(&sdl.Rect{X, Y, 30, 30}, 0xffffffff)
-	janela.UpdateSurface()
-}
-
-// Desenhar linha usando algoritmo de Bresenhan
-func Brensenhan() {
-
 }
