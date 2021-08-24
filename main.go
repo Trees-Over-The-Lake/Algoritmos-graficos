@@ -1,48 +1,46 @@
 package main
 
 import (
-	"fmt"
-	"runtime"
-	"time"
-
-	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
-func init() {
-	runtime.LockOSThread() // Algumas operacoes precisam ser executadas obrigatoriamente na thread main
+func main() {
+	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		panic(err)
+	}
+	defer sdl.Quit()
+
+	window, err := sdl.CreateWindow("Trabalho prático 1", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		800, 600, sdl.WINDOW_SHOWN)
+	if err != nil {
+		panic(err)
+	}
+	defer window.Destroy()
+
+	surface, err := window.GetSurface()
+	if err != nil {
+		panic(err)
+	}
+	surface.FillRect(nil, 0)
+
+	rect := sdl.Rect{0, 0, 200, 200}
+	//triangle := sdl.Re
+	surface.FillRect(&rect, 0xffff0000)
+	window.UpdateSurface()
+
+	running := true
+	for running {
+		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			switch event.(type) {
+			case *sdl.QuitEvent:
+				println("Quit")
+				running = false
+			}
+		}
+	}
 }
 
-func main() {
-	err := glfw.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer glfw.Terminate()
+// Desenhar linha usando algoritmo de Bresenhan
+func Brensenhan() {
 
-	// // OR using GLFW:
-	// vk.SetGetInstanceProcAddr(glfw.GetVulkanGetInstanceProcAddress())
-
-	// if err := vk.Init(); err != nil {
-	// 	panic(err)
-	// }
-
-	janela, err := glfw.CreateWindow(1280, 720, "Trabalho prático 1", nil, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	janela.MakeContextCurrent()
-
-	for !janela.ShouldClose() {
-		// Inicializar janela
-		if janela.GetMouseButton(glfw.MouseButton1) == glfw.Press {
-			posX, posY := janela.GetCursorPos()
-			fmt.Printf("Posição X: %v | Posição Y: %v\n", posX, posY)
-			time.Sleep(time.Millisecond * 250)
-		}
-
-		janela.SwapBuffers()
-		glfw.PollEvents()
-
-	}
 }
