@@ -7,7 +7,7 @@ import (
 )
 
 // Algoritmo DDA
-func DDA(X1 int, Y1 int, X2 int, Y2 int, janela *sdl.Window, superficie *sdl.Surface) {
+func DDA(janela *sdl.Window, superficie *sdl.Surface, X1 int, Y1 int, X2 int, Y2 int) {
 	var dx, dy, passos int
 	var x_incr, y_incr, x, y float64
 

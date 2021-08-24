@@ -43,7 +43,9 @@ func main() {
 
 		if estado&sdl.Button(sdl.BUTTON_LEFT) == 1 {
 			superficie.FillRect(nil, 0)
-			algorithms.Brensenhan(janela, superficie, 50, 50, int(mouseX), int(mouseY))
+			algorithms.DDA(janela, superficie, 50, 50, int(mouseX), int(mouseY))
+			algorithms.DDA(janela, superficie, int(mouseX), int(mouseY), 500, 500)
+			algorithms.DDA(janela, superficie, 500, 500, 50, 50)
 		}
 
 		// Sincronização vertical do monitor com a aplicação
