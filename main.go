@@ -2,7 +2,6 @@ package main
 
 import (
 	"graphics_algorithms/refresh"
-	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -46,7 +45,8 @@ func main() {
 			superficie.FillRect(nil, 0)
 		}
 
-		time.Sleep(time.Duration(refresh.RefreshRate(75)))
+		// Sincronização vertical do monitor com a aplicação
+		refresh.Vsync(janela)
 	}
 }
 
