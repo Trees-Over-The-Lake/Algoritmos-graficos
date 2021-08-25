@@ -7,7 +7,7 @@ import (
 )
 
 // Algoritmo DDA
-func DDA(janela *sdl.Window, superficie *sdl.Surface, X1 int, Y1 int, X2 int, Y2 int) {
+func DDA(superficie *sdl.Surface, X1 int, Y1 int, X2 int, Y2 int) {
 	var dx, dy, passos int
 	var x_incr, y_incr, x, y float64
 
@@ -28,11 +28,11 @@ func DDA(janela *sdl.Window, superficie *sdl.Surface, X1 int, Y1 int, X2 int, Y2
 	x = float64(X1)
 	y = float64(Y1)
 
-	DesenharPontoBranco(janela, superficie, int32(math.Round(x)), int32(math.Round(y)))
+	DesenharPontoBranco(superficie, int32(math.Round(x)), int32(math.Round(y)))
 
 	for i := 1; i < passos; i++ {
 		x += x_incr
 		y += y_incr
-		DesenharPontoBranco(janela, superficie, int32(math.Round(x)), int32(math.Round(y)))
+		DesenharPontoBranco(superficie, int32(math.Round(x)), int32(math.Round(y)))
 	}
 }
