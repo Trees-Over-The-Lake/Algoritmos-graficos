@@ -74,7 +74,7 @@ func main() {
 				triangle.Clear()
 			}
 
-			time.Sleep(200 * time.Millisecond)
+			time.Sleep(150 * time.Millisecond)
 		}
 
 		// Sincronização vertical do monitor com a aplicação
