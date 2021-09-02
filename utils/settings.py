@@ -6,7 +6,7 @@ BLUE  = (0, 0, 255)
 
 FPS = 60
 
-WIDTH, HEIGHT = 601, 700
+WIDTH, HEIGHT = 600, 700
 
 ROWS = COLS = 50
 

@@ -52,7 +52,7 @@ def get_row_col_from_pos(pos):
 # Inicializando configurações básicas do pygame
 clock = pygame.time.Clock()            # Pegando um ponteiro para a função de clock do pygame
 grid = init_grid(ROWS, COLS, BG_COLOR) # Colorindo o grid da cor inicial
-drawing_color = WHITE                  # Cor inicial de desenho
+drawing_color = INVERTED_BG_COLOR      # Cor inicial de desenho
 
 run = True
 while run:
@@ -72,7 +72,8 @@ while run:
             # Verificando se posição clicada pelo usuário é válida
             try:
                 row, col = get_row_col_from_pos(pos)
-            
+                grid[col][row] = drawing_color # Desenhando na posição clicada
+
             # A posição clicada pelo usuário não é válida
             except IndexError:
                 pass
