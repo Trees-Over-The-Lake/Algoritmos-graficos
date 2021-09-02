@@ -1,14 +1,16 @@
+import pygame
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE  = (0, 0, 255)
 
-FPS = 60
+FPS = 240
 
 WIDTH, HEIGHT = 600, 700
 
-ROWS = COLS = 50
+ROWS = COLS = 40
 
 TOOLBAR_HEIGHT = HEIGHT - WIDTH
 

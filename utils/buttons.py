@@ -1,4 +1,5 @@
 from .settings import *
+import pygame
 
 # Classe para definir botões
 class Button:
@@ -19,8 +20,19 @@ class Button:
         # Se o texto existir
         if self.text:
             button_font = get_font(22)
-            text_surface = button_font.render()
+            text_surface = button_font.render(self.text, 1, self.text_color)
+            # Procurando a posição em cima da esquerda de um pixel (0, 0) relativo a uma posição do grid
+            win.blit(text_surface, (self.x + self.width/2 - text_surface.get_width()/2, 
+                                    self.y + self.heigth/2 - text_surface.get_height()/2))
 
     #
     def clicked(self, pos):
-        pass
+        x, y = pos
+
+        if not (x >= self.x and x <= self.x + self.width):
+            return False
+        
+        if not (y >= self.y and y <= self.y + self.heigth):
+            return False
+
+        return True
