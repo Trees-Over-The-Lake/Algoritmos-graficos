@@ -4,12 +4,13 @@ from .settings import *
 def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_size):
 	# Não fazer nada se for a primeira iteração
 	if posX1 > 0 and posX2 > 0 and posY1 > 0 and posY2 > 0:
+		grid = init_grid()
+
 		if algorithm == "DDA":
-			grid = init_grid()
 			grid = DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size)
 
 		elif algorithm == "Brensenham":
-			pass
+			grid = bresenham(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size)
 
 		elif algorithm == "Linha":
 			pass
@@ -23,6 +24,9 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 		elif algorithm == "Limpar":
 			return init_grid()
 
+	# Se o grid estiver vazio retornar um grid vazio
+	if not grid:
+		grid = init_grid()
 	return grid
 
 # Transformando uma posição do pygame em uma posição do grid
@@ -88,10 +92,37 @@ def DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
 			draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
 			grid[int(draw_x)][int(draw_y)] = color
 		except IndexError:
-			return grid
+			return None
 
 	return grid
 
 # Algoritmo de Brensenham para desenhar linha
-def Brensenham(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
-	pass
+def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
+	# Swap dos elementos para sempre ter X1 sendo menor X2
+	if x1 > x2:
+		x1, x2 = x2, x1
+	if y1 > y2:
+		y1, y2 = y2, y1
+
+	m_new = 2 * (y2 - y1)
+	slope_error_new = m_new - (x2 - x1)
+
+	y = y1
+	for x in range(x1, x2 + 1):
+		# Verificar se o pixel clicado está dentro da tela
+		try:
+			draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
+			grid[int(draw_x)][int(draw_y)] = color
+		except IndexError:
+			return None
+
+		# Add slope to increment angle formed
+		slope_error_new = slope_error_new + m_new
+
+		# Slope error reached limit, time to
+		# increment y and update slope error.
+		if (slope_error_new >= 0):
+			y = y + 1
+			slope_error_new = slope_error_new - 2 * (x2 - x1)
+
+	return grid
