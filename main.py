@@ -1,4 +1,4 @@
-from utils.buttons import Button
+import utils
 from utils import *
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -32,45 +32,25 @@ def draw_grid(win, grid):
         for i in range(COLS + 1):
             pygame.draw.line(win, INVERTED_BG_COLOR, (i * PIXEL_SIZE, 0), (i * PIXEL_SIZE, HEIGHT - TOOLBAR_HEIGHT))
 
-# Inicializando o grid que será desenhado
-def init_grid(rows, cols, color):
-    grid = []
-
-    for i in range(rows):
-        grid.append([])
-        for _ in range(cols):
-            grid[i].append(color)
-    
-    return grid
-
-# Transformando uma posição do pygame em uma posição do grid 
-def get_row_col_from_pos(pos):
-    x, y = pos
-    row = x // PIXEL_SIZE
-    col = y // PIXEL_SIZE
-
-    # A posição passada não está dentro da área desenhavel
-    if row >= ROWS:
-        raise IndexError
-
-    return row, col
-
 # Inicializando configurações básicas do pygame
-clock = pygame.time.Clock()            # Pegando um ponteiro para a função de clock do pygame
-grid = init_grid(ROWS, COLS, BG_COLOR) # Colorindo o grid da cor inicial
-drawing_color = INVERTED_BG_COLOR      # Cor inicial de desenho
+clock = pygame.time.Clock()  # Pegando um ponteiro para a função de clock do pygame
+grid = utils.init_grid()  # Colorindo o grid da cor inicial
+drawing_color = INVERTED_BG_COLOR  # Cor inicial de desenho
 
 # Botões do programa
 button_y = HEIGHT - TOOLBAR_HEIGHT/2 - 25     # Posição de início dos botões de baixo para cima
 buttons = [
-    Button(10, button_y, 50, 50, BLACK),
-    Button(70, button_y, 50, 50, RED),
-    Button(130, button_y, 50, 50, GREEN),
-    Button(190, button_y, 50, 50, BLUE),
-    Button(250, button_y, 60, 50, WHITE, "Apagar", BLACK),
-    Button(320, button_y, 60, 50, WHITE, "Limpar", BLACK)
+    Button(10, button_y, 50, 50, BLACK, WHITE, "DDA", BLACK),
+    Button(70, button_y, 100, 50, RED, WHITE, "Brensenham", BLACK),
+    Button(180, button_y, 50, 50, GREEN, WHITE, "Linha", BLACK),
+    Button(240, button_y, 60, 50, BLUE, WHITE, "Círculo", BLACK),
+    Button(310, button_y, 120, 50, WHITE, WHITE, "Segundo Ponto", BLACK),
+    Button(440, button_y, 60, 50, WHITE, WHITE, "Limpar", BLACK)
 ]
 
+pos1 = (-1, -1)  # Primeiro click do mouse
+pos2 = (-1, -1)  # Click do mouse quando selecionado segundo ponto
+algorithm = "DDA"
 run = True
 while run:
     # Selecionando os FPS
@@ -82,30 +62,27 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+        # Pegando a posição do mouse na tela
+        mousePos = pygame.mouse.get_pos()
+
         # Verificando se o botão esquerdo do mouse foi clicado
         if pygame.mouse.get_pressed()[0]:
-            pos = pygame.mouse.get_pos()
+            pos1 = mousePos
 
-            # Verificando se posição clicada pelo usuário é válida
-            try:
-                row, col = get_row_col_from_pos(pos)
-                grid[col][row] = drawing_color # Desenhando na posição clicada
+            # Se o botão for clicado mudar algoritmo
+            for button in buttons:
+                if button.clicked(mousePos):
+                    grid = init_grid()
+                    algorithm = button.text
 
-            # A posição clicada pelo usuário não é válida
-            except IndexError:
-                # Verificar se algum botão foi clicado
-                for button in buttons:
-                    if not button.clicked(pos):
-                        continue
+        if pygame.mouse.get_pressed()[2]:
+            pos2 = mousePos
 
-                    drawing_color = button.color # Mudando a cor do desenho para a cor clicada
+    # Desenhando os algoritmos na tela
+    posX1, posY1 = pos1
+    posX2, posY2 = pos2
+    grid = utils.algorithms.draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, BLACK, ROWS, PIXEL_SIZE)
 
-                    if button.text == "Limpar":
-                        grid = init_grid(ROWS, COLS, BG_COLOR)
-                        drawing_color = BLACK
-
-
-    
     # Atualizar tela
     draw(WIN, grid, buttons)
 
