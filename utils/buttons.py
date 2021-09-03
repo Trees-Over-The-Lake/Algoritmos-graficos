@@ -23,7 +23,7 @@ class Button:
 
         # Se o texto existir
         if self.text:
-            button_font = get_font(22)
+            button_font = get_font(15)
             text_surface = button_font.render(self.text, 1, self.text_color)
             # Procurando a posição em cima da esquerda de um pixel (0, 0) relativo a uma posição do grid
             win.blit(text_surface, (self.x + self.width/2 - text_surface.get_width()/2, 

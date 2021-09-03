@@ -98,31 +98,103 @@ def DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
 
 # Algoritmo de Brensenham para desenhar linha
 def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
-	# Swap dos elementos para sempre ter X1 sendo menor X2
-	if x1 > x2:
-		x1, x2 = x2, x1
-	if y1 > y2:
-		y1, y2 = y2, y1
+	dx, dy, x, y, p, const1, const2, passo_x, passo_y = 0, 0, 0, 0, 0, 0, 0, 0, 0
 
-	m_new = 2 * (y2 - y1)
-	slope_error_new = m_new - (x2 - x1)
+	# Calcular o delta X e delta y
+	dx = abs(x2 - x1)
+	dy = abs(y2 - y1)
 
+	p = 2*dy - dx
+
+	# Evitando uma divisão por zero
+	if dx == 0:
+		return
+
+	# Calcular angulo da reta
+	slope = dy / dx
+
+	if slope >= 1:
+		const1 = 2 * dx
+		const2 = 2 * dx - 2 * dy
+	else:
+		const1 = 2 * dy
+		const2 = 2 * dy - 2 * dx
+
+	x = x1
 	y = y1
-	for x in range(x1, x2 + 1):
-		# Verificar se o pixel clicado está dentro da tela
-		try:
-			draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
-			grid[int(draw_x)][int(draw_y)] = color
-		except IndexError:
-			return None
 
-		# Add slope to increment angle formed
-		slope_error_new = slope_error_new + m_new
+	# Definindo a direção da reta
+	if y2 > y1:
+		passo_y = 1
 
-		# Slope error reached limit, time to
-		# increment y and update slope error.
-		if (slope_error_new >= 0):
-			y = y + 1
-			slope_error_new = slope_error_new - 2 * (x2 - x1)
+	else:
+		passo_y = -1
+
+	grid = draw_in_grid(x, y, rows, pixel_size, grid, color)  # Desenhar no grid
+	# Retornando da função se não for possível desenhar
+	if not grid:
+		return
+
+	if x2 > x1:
+		passo_x = x
+
+		while x <= x2:
+			grid = draw_in_grid(x, y, rows, pixel_size, grid, color)  # Desenhar no grid
+			# Retornando da função se não for possível desenhar
+			if not grid:
+				return
+
+			if slope >= 1:
+				y = y + passo_y
+			else:
+				x = x + passo_x
+
+			if p < 0:
+				p = p + const1
+			else:
+				p = p + const2
+
+				if slope >= 1:
+					x = x + passo_x
+				else:
+					y = y + passo_y
+
+	else:
+		passo_x = -1
+
+		# Desenhe a reta
+		while x >= x2:
+			grid = draw_in_grid(x, y, rows, pixel_size, grid, color)  # Desenhar no grid
+			# Retornando da função se não for possível desenhar
+			if not grid:
+				return
+
+			if slope >= 1:
+				y = y + passo_y
+			else:
+				x = x + passo_x
+
+			if p < 0:
+				p = p + const1
+			else:
+				p = p + const2
+
+				if slope >= 1:
+					x = x + passo_x
+				else:
+					y = y + passo_y
+
+
+	return grid
+
+
+# Desenhar dentro do grid
+def draw_in_grid(x, y, rows, pixel_size, grid, color):
+	# Verificar se o pixel clicado está dentro da tela
+	try:
+		draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
+		grid[int(draw_x)][int(draw_y)] = color
+	except IndexError:
+		return None
 
 	return grid

@@ -22,4 +22,4 @@ INVERTED_BG_COLOR = BLACK
 DRAW_GRID_LINES = True
 
 def get_font(size):
-    return pygame.font.SysFont("comicsans", size)
+    return pygame.font.SysFont("Sans", size)
