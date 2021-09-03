@@ -12,10 +12,10 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 		elif algorithm == "Brensenham":
 			grid = bresenham(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size)
 
-		elif algorithm == "Linha":
-			pass
-
 		elif algorithm == "Círculo":
+			grid = draw_circle_bresenham(posX1, posY2, abs(posX2 - posX1), grid, color, rows, pixel_size)
+
+		elif algorithm == "":
 			pass
 
 		elif algorithm == "Segundo Ponto":
@@ -187,6 +187,68 @@ def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
 
 	return grid
 
+# Desenhar circulo com bresenham
+def draw_circle_bresenham(x, y, raio, grid, color, rows, pixel_size):
+	# Desenhar circulos
+	def draw_circle(xc, yc, x, y, grid, color, rows, pixel_size):
+		grid = draw_in_grid(xc + x, yc + y, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc - x, yc + y, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc + x, yc - y, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc - x, yc - y, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc + y, yc + x, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc - y, yc + x, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc + y, yc - x, rows, pixel_size, grid, color)
+		if not grid:
+			return
+		grid = draw_in_grid(xc - y, yc - x, rows, pixel_size, grid, color)
+		if not grid:
+			return
+
+		return grid
+
+	# Desenhar todos os pontos do círculo
+	def brensenham(xc, yc, r, rows, pixel_size, grid, color):
+		x = 0
+		y = r
+		d = 3 - 2 * r
+
+		grid = draw_circle(xc, yc, x, y, grid, color, rows, pixel_size)
+		# Se o usuário clicar em uma área inválida da tela
+		if not grid:
+			return
+
+		# Ir desenhando o circulo 8 pixels de cada vez
+		while y >= x:
+			x += 1
+
+			if d > 0:
+				y -= 1
+				d += 4 * (x - y) + 10
+
+			else:
+				d += 4 * x + 6
+
+			grid = draw_circle(xc, yc, x, y, grid, color, rows, pixel_size)
+			# Se o usuário clicar em uma área inválida da tela
+			if not grid:
+				return
+
+		return grid
+
+	# Chamando os métodos para desenhar o círculo
+	return brensenham(x, y, raio, rows, pixel_size, grid, color)
 
 # Desenhar dentro do grid
 def draw_in_grid(x, y, rows, pixel_size, grid, color):
