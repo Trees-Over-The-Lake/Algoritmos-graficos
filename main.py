@@ -48,8 +48,8 @@ buttons = [
     Button(520, button_y, 60, 50, WHITE, WHITE, "Limpar", BLACK)
 ]
 
-pos1 = (-1, -1)  # Primeiro click do mouse
-pos2 = (-1, -1)  # Click do mouse quando selecionado segundo ponto
+pos1 = (0, 0)  # Primeiro click do mouse
+pos2 = (0, 0)  # Click do mouse quando selecionado segundo ponto
 algorithm = "DDA"
 line = Lines()
 run = True
@@ -83,6 +83,12 @@ while run:
                     if (button.text == "DDA" or button.text == "Bresenham" or button.text == "Círculo"):
                         mousePosX, mousePosY = pos1
                         line.salvar_linhasX(mousePosX, mousePosY, button.text)
+
+                    if button.text == 'Limpar':
+                        line = Lines()
+                        pos1 = (0, 0)
+                        pos2 = (0, 0)
+                        grid = init_grid()
 
         if pygame.mouse.get_pressed()[2] and area_grid:
             pos2 = mousePos

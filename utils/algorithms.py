@@ -15,13 +15,12 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 			grid = draw_circle_bresenham(posX1, posY2, abs(posX2 - posX1), grid, color, rows, pixel_size)
 
 		elif algorithm == "Cohen Sutherland":
-			grid = Clipping.cohenSutherland(posX1, posY1, BLUE, rows, grid, pixel_size, line)
+			clip = Clipping()
+			grid = clip.cohenSutherland(posX1, posY1, BLUE, rows, grid, pixel_size, line)
 
 		elif algorithm == "Liang Barsky":
-			grid = Clipping.liangBarsky()
-
-		elif algorithm == "Limpar":
-			return init_grid()
+			clip = Clipping()
+			grid = clip.liangBarsky(posX1, posY1, grid, RED, rows, pixel_size, line)
 
 	return grid
 
@@ -217,33 +216,125 @@ def draw_circle_bresenham(x, y, raio, grid, color, rows, pixel_size):
 	return brensenham(x, y, raio, rows, pixel_size, grid, color)
 
 class Clipping:
+	#  Valores para o bitwase
+	DENTRO = 0b0
+	ESQUERDA = 0b1
+	DIREITA = 0b10
+	ABAIXO = 0b100
+	TOPO = 0b1000
+
+	#  Valores máximos para o desenho
+	x_max = -1
+	y_max = -1
+	x_min = -1
+	y_min = -1
+
+	#  Valores auxiliares, pois python não tem ponteiro
+	t1 = t2 = 0
+
+	#  Verificar se o retangulo existe
+	def existsRectangle(self) -> bool:
+		return self.x_max != -1 and self.y_max != -1 and self.x_min != -1 and self.y_min != -1
+
+	# Verificar onde o ponto está
+	def qualLado(self, x, y):
+		code = self.DENTRO
+
+		#  Linha a esquerda do retangulo
+		if x < self.x_min:
+			code |= self.ESQUERDA
+		# Linha está a direita do retângulo
+		elif x > self.x_max:
+			code = self.DIREITA
+
+		# Linha está abaixo do retângulo
+		if y < self.y_min:
+			code |= self.ABAIXO
+		# Linha está acima do retângulo
+		elif y > self.y_max:
+			code |= self.TOPO
+
+		return code
+
+	def desenharRetangulo(self, x, y, color, rows, grid, pixel_size, line):
+		# Desenhando um retangulo
+		deslocamento_x = 150
+		deslocamento_y = 100
+		for i in range(deslocamento_x):
+			grid = draw_in_grid(x + i, y, rows, pixel_size, grid, color)  # Desenhando da esquerda para a direita
+		for i in range(deslocamento_y):
+			grid = draw_in_grid(x + deslocamento_x, y + i, rows, pixel_size, grid,
+								color)  # Desenhando da direita para baixo
+		for i in range(deslocamento_y):
+			grid = draw_in_grid(x, y + i, rows, pixel_size, grid, color)  # Desenhando de cima para baixo
+		for i in range(deslocamento_x):
+			grid = draw_in_grid(x + i, y + deslocamento_y, rows, pixel_size, grid,
+								color)  # Desenhando da direita para baixo
+
+		return grid
+
 	#  Algoritmo de Cohen Sutherland para clipping
-	def cohenSutherland(x, y, color, rows, grid, pixel_size, line):
+	def cohenSutherland(self, x, y, color, rows, grid, pixel_size, line):
+		grid = self.desenharRetangulo(x, y, color, rows, grid, pixel_size, line)
 		# Redesenhar a linha inicial
 		if line.algoritmo == "DDA":
 			grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
 		elif line.algoritmo == "Bresenham":
 			grid = bresenham(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
 		elif line.algoritmo == "Círculo":
-			grid = draw_circle_bresenham(line.pontoX1, line.pontoY1, abs(line.pontoX2 - line.pontoX1), grid, RED, rows, pixel_size)
+			grid = draw_circle_bresenham(line.pontoX1, line.pontoY1, abs(line.pontoX2 - line.pontoX1), grid, RED, rows,
+										 pixel_size)
 
-		# Desenhando um retangulo
-		deslocamento_x = 150
-		deslocamento_y = 100
-		for i in range(deslocamento_x):
-			grid = draw_in_grid(x+i, y, rows, pixel_size, grid, color)  # Desenhando da esquerda para a direita
-		for i in range(deslocamento_y):
-			grid = draw_in_grid(x+deslocamento_x, y + i, rows, pixel_size, grid, color)  # Desenhando da direita para baixo
-		for i in range(deslocamento_y):
-			grid = draw_in_grid(x, y + i, rows, pixel_size, grid, color)  # Desenhando de cima para baixo
-		for i in range(deslocamento_x):
-			grid = draw_in_grid(x+i, y + deslocamento_y, rows, pixel_size, grid, color)  # Desenhando da direita para baixo
 
 		return grid
 
+	#  Testando o clipping
+	def testandoClipping(self, ponto1, ponto2) -> bool:
+		isClipping = True
+		r = 0
+
+		if ponto1 < 0:
+			r = ponto2 / ponto1
+
+			if r > self.t2:
+				isClipping = False
+			elif r > self.t2:
+				self.t1 = r
+
+		elif ponto1 > 0:
+				r = ponto2 / ponto1
+
+				if r < self.t1:
+					isClipping = False
+				elif r < self.t2:
+					self.t2 = r
+
+		else:
+			if ponto2 < 0:
+				isClipping = False
+
+		return isClipping
+
 	#  Algoritmo de Liang Barsky para clipping
-	def liangBarsky(x, y, win, color, rows, pixel_size):
-		pass
+	def liangBarsky(self, retanguloX, retanguloY, grid, color, rows, pixel_size, line):
+		dx = line.pontoX2 - line.pontoX1
+		t1 = 0
+		t2 = 1
+
+		if self.testandoClipping(-dx, line.pontoX1 - self.x_min) and self.testandoClipping(dx, self.x_max - line.pontoX1):
+			dy = line.pontoY2 - line.pontoY1
+
+			if self.testandoClipping(-dy, line.pontoY1 - self.y_min) and self.testandoClipping(dy, self.y_max - line.pontoY1):
+				if self.t2 < 1:
+					line.pontoX2 = line.pontoX1 + self.t2*dx
+					line.pontoY2 = line.pontoY1 + self.t2*dy
+
+				if self.t1 > 0:
+					line.pontoX1 += self.t1 * dy
+					line.pontoY1 += self.t1 * dy
+
+		grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, color, rows, pixel_size)
+		return self.desenharRetangulo(retanguloX, retanguloY, BLUE, rows, grid, pixel_size, line)
 
 # Desenhar dentro do grid
 def draw_in_grid(x, y, rows, pixel_size, grid, color):
