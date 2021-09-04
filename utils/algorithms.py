@@ -275,7 +275,6 @@ class Clipping:
 
 	#  Algoritmo de Cohen Sutherland para clipping
 	def cohenSutherland(self, x, y, color, rows, grid, pixel_size, line):
-		grid = self.desenharRetangulo(x, y, color, rows, grid, pixel_size, line)
 		# Redesenhar a linha inicial
 		if line.algoritmo == "DDA":
 			grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
@@ -285,7 +284,7 @@ class Clipping:
 			grid = draw_circle_bresenham(line.pontoX1, line.pontoY1, abs(line.pontoX2 - line.pontoX1), grid, RED, rows,
 										 pixel_size)
 
-
+		grid = self.desenharRetangulo(x, y, color, rows, grid, pixel_size, line)
 		return grid
 
 	#  Testando o clipping
