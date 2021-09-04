@@ -15,10 +15,10 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 		elif algorithm == "Círculo":
 			grid = draw_circle_bresenham(posX1, posY2, abs(posX2 - posX1), grid, color, rows, pixel_size)
 
-		elif algorithm == "":
+		elif algorithm == "Cohen Sutherland":
 			pass
 
-		elif algorithm == "Segundo Ponto":
+		elif algorithm == "Liang Barsky":
 			pass
 
 		elif algorithm == "Limpar":
@@ -98,7 +98,9 @@ def DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
 
 # Algoritmo de Brensenham para desenhar linha
 def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
-	dx, dy, x, y, p, const1, const2, passo_x, passo_y = 0, 0, 0, 0, 0, 0, 0, 0, 0
+	if x2 > x1 or y2 > x1:
+		x1, x2 = x2, x1
+		y1, y2 = y2, y1
 
 	# Calcular o delta X e delta y
 	dx = abs(x2 - x1)
@@ -260,3 +262,11 @@ def draw_in_grid(x, y, rows, pixel_size, grid, color):
 		return None
 
 	return grid
+
+#  Algoritmo de Cohen Sutherland para clipping
+def cohenSutherland(x1, y1, x2, y2, grid, color, rows, pixel_size):
+	pass
+
+#  Algoritmo de Liang Barsky para clipping
+def liangBarsky(x1, y1, x2, y2, grid, color, rows, pixel_size):
+	pass

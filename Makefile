@@ -4,7 +4,7 @@ run:
 	python3 $(FILE)
 
 all:
-    pyinstaller -F $(FILE)
+	pyinstaller -F $(FILE)
 
 clean:
 	rm -rf build

@@ -33,7 +33,7 @@ def draw_grid(win, grid):
             pygame.draw.line(win, INVERTED_BG_COLOR, (i * PIXEL_SIZE, 0), (i * PIXEL_SIZE, HEIGHT - TOOLBAR_HEIGHT))
 
 # Inicializando configurações básicas do pygame
-clock = pygame.time.Clock()  # Pegando um ponteiro para a função de clock do pygame
+clock = pygame.time.Clock()   # Pegando um ponteiro para a função de clock do pygame
 grid = utils.init_grid()  # Colorindo o grid da cor inicial
 drawing_color = INVERTED_BG_COLOR  # Cor inicial de desenho
 
@@ -42,10 +42,10 @@ button_y = HEIGHT - TOOLBAR_HEIGHT/2 - 25     # Posição de início dos botões
 buttons = [
     Button(10, button_y, 50, 50, BLACK, WHITE, "DDA", BLACK),
     Button(70, button_y, 100, 50, RED, WHITE, "Brensenham", BLACK),
-    Button(180, button_y, 50, 50, GREEN, WHITE, "Linha", BLACK),
-    Button(240, button_y, 60, 50, BLUE, WHITE, "Círculo", BLACK),
-    Button(310, button_y, 120, 50, WHITE, WHITE, "Segundo Ponto", BLACK),
-    Button(440, button_y, 60, 50, WHITE, WHITE, "Limpar", BLACK)
+    Button(180, button_y, 60, 50, BLUE, WHITE, "Círculo", BLACK),
+    Button(250, button_y, 130, 50, GREEN, WHITE, "Cohen Sutherland", BLACK),
+    Button(390, button_y, 120, 50, WHITE, WHITE, "Liang Barsky", BLACK),
+    Button(520, button_y, 60, 50, WHITE, WHITE, "Limpar", BLACK)
 ]
 
 pos1 = (-1, -1)  # Primeiro click do mouse
