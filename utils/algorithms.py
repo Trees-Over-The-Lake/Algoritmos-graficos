@@ -1,32 +1,28 @@
 from .settings import *
 
 # Selecionando o algoritmo para exibir na tela
-def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_size):
+def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_size, line):
 	# Não fazer nada se for a primeira iteração
 	if posX1 > 0 and posX2 > 0 and posY1 > 0 and posY2 > 0:
 		grid = init_grid()
-
 		if algorithm == "DDA":
 			grid = DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size)
 
-		elif algorithm == "Brensenham":
+		elif algorithm == "Bresenham":
 			grid = bresenham(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size)
 
 		elif algorithm == "Círculo":
 			grid = draw_circle_bresenham(posX1, posY2, abs(posX2 - posX1), grid, color, rows, pixel_size)
 
 		elif algorithm == "Cohen Sutherland":
-			pass
+			grid = Clipping.cohenSutherland(posX1, posY1, BLUE, rows, grid, pixel_size, line)
 
 		elif algorithm == "Liang Barsky":
-			pass
+			grid = Clipping.liangBarsky()
 
 		elif algorithm == "Limpar":
 			return init_grid()
 
-	# Se o grid estiver vazio retornar um grid vazio
-	if not grid:
-		grid = init_grid()
 	return grid
 
 # Transformando uma posição do pygame em uma posição do grid
@@ -76,23 +72,13 @@ def DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
 	x = posX1
 	y = posY1
 
-	# Verificar se o pixel clicado está dentro da tela
-	try:
-		draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
-		grid[int(draw_x)][int(draw_y)] = color
-	except IndexError:
-		return grid
+	grid = draw_in_grid(x, y, rows, pixel_size, grid, color)
 
 	for i in range(passos):
 		x = x + x_incr
 		y = y + y_incr
 
-		# Verificar se o pixel clicado está dentro da tela
-		try:
-			draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
-			grid[int(draw_x)][int(draw_y)] = color
-		except IndexError:
-			return None
+		grid = draw_in_grid(x, y, rows, pixel_size, grid, color)
 
 	return grid
 
@@ -194,29 +180,13 @@ def draw_circle_bresenham(x, y, raio, grid, color, rows, pixel_size):
 	# Desenhar circulos
 	def draw_circle(xc, yc, x, y, grid, color, rows, pixel_size):
 		grid = draw_in_grid(xc + x, yc + y, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc - x, yc + y, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc + x, yc - y, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc - x, yc - y, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc + y, yc + x, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc - y, yc + x, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc + y, yc - x, rows, pixel_size, grid, color)
-		if not grid:
-			return
 		grid = draw_in_grid(xc - y, yc - x, rows, pixel_size, grid, color)
-		if not grid:
-			return
 
 		return grid
 
@@ -227,9 +197,6 @@ def draw_circle_bresenham(x, y, raio, grid, color, rows, pixel_size):
 		d = 3 - 2 * r
 
 		grid = draw_circle(xc, yc, x, y, grid, color, rows, pixel_size)
-		# Se o usuário clicar em uma área inválida da tela
-		if not grid:
-			return
 
 		# Ir desenhando o circulo 8 pixels de cada vez
 		while y >= x:
@@ -243,14 +210,40 @@ def draw_circle_bresenham(x, y, raio, grid, color, rows, pixel_size):
 				d += 4 * x + 6
 
 			grid = draw_circle(xc, yc, x, y, grid, color, rows, pixel_size)
-			# Se o usuário clicar em uma área inválida da tela
-			if not grid:
-				return
 
 		return grid
 
 	# Chamando os métodos para desenhar o círculo
 	return brensenham(x, y, raio, rows, pixel_size, grid, color)
+
+class Clipping:
+	#  Algoritmo de Cohen Sutherland para clipping
+	def cohenSutherland(x, y, color, rows, grid, pixel_size, line):
+		# Redesenhar a linha inicial
+		if line.algoritmo == "DDA":
+			grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
+		elif line.algoritmo == "Bresenham":
+			grid = bresenham(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
+		elif line.algoritmo == "Círculo":
+			grid = draw_circle_bresenham(line.pontoX1, line.pontoY1, abs(line.pontoX2 - line.pontoX1), grid, RED, rows, pixel_size)
+
+		# Desenhando um retangulo
+		deslocamento_x = 150
+		deslocamento_y = 100
+		for i in range(deslocamento_x):
+			grid = draw_in_grid(x+i, y, rows, pixel_size, grid, color)  # Desenhando da esquerda para a direita
+		for i in range(deslocamento_y):
+			grid = draw_in_grid(x+deslocamento_x, y + i, rows, pixel_size, grid, color)  # Desenhando da direita para baixo
+		for i in range(deslocamento_y):
+			grid = draw_in_grid(x, y + i, rows, pixel_size, grid, color)  # Desenhando de cima para baixo
+		for i in range(deslocamento_x):
+			grid = draw_in_grid(x+i, y + deslocamento_y, rows, pixel_size, grid, color)  # Desenhando da direita para baixo
+
+		return grid
+
+	#  Algoritmo de Liang Barsky para clipping
+	def liangBarsky(x, y, win, color, rows, pixel_size):
+		pass
 
 # Desenhar dentro do grid
 def draw_in_grid(x, y, rows, pixel_size, grid, color):
@@ -259,14 +252,6 @@ def draw_in_grid(x, y, rows, pixel_size, grid, color):
 		draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
 		grid[int(draw_x)][int(draw_y)] = color
 	except IndexError:
-		return None
+		print('Pixel desenhado fora da tela')
 
 	return grid
-
-#  Algoritmo de Cohen Sutherland para clipping
-def cohenSutherland(x1, y1, x2, y2, grid, color, rows, pixel_size):
-	pass
-
-#  Algoritmo de Liang Barsky para clipping
-def liangBarsky(x1, y1, x2, y2, grid, color, rows, pixel_size):
-	pass

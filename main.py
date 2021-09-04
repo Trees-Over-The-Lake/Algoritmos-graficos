@@ -41,7 +41,7 @@ drawing_color = INVERTED_BG_COLOR  # Cor inicial de desenho
 button_y = HEIGHT - TOOLBAR_HEIGHT/2 - 25     # Posição de início dos botões de baixo para cima
 buttons = [
     Button(10, button_y, 50, 50, BLACK, WHITE, "DDA", BLACK),
-    Button(70, button_y, 100, 50, RED, WHITE, "Brensenham", BLACK),
+    Button(70, button_y, 100, 50, RED, WHITE, "Bresenham", BLACK),
     Button(180, button_y, 60, 50, BLUE, WHITE, "Círculo", BLACK),
     Button(250, button_y, 130, 50, GREEN, WHITE, "Cohen Sutherland", BLACK),
     Button(390, button_y, 120, 50, WHITE, WHITE, "Liang Barsky", BLACK),
@@ -51,6 +51,7 @@ buttons = [
 pos1 = (-1, -1)  # Primeiro click do mouse
 pos2 = (-1, -1)  # Click do mouse quando selecionado segundo ponto
 algorithm = "DDA"
+line = Lines()
 run = True
 while run:
     # Selecionando os FPS
@@ -64,24 +65,34 @@ while run:
 
         # Pegando a posição do mouse na tela
         mousePos = pygame.mouse.get_pos()
+        mousePosX, mousePosY = mousePos
+        area_grid = True
+        if HEIGHT - TOOLBAR_HEIGHT <= mousePosY:
+            area_grid = False
 
         # Verificando se o botão esquerdo do mouse foi clicado
         if pygame.mouse.get_pressed()[0]:
-            pos1 = mousePos
+            if area_grid:
+                pos1 = mousePos
 
             # Se o botão for clicado mudar algoritmo
             for button in buttons:
                 if button.clicked(mousePos):
-                    grid = init_grid()
                     algorithm = button.text
 
-        if pygame.mouse.get_pressed()[2]:
+                    if (button.text == "DDA" or button.text == "Bresenham" or button.text == "Círculo"):
+                        mousePosX, mousePosY = pos1
+                        line.salvar_linhasX(mousePosX, mousePosY, button.text)
+
+        if pygame.mouse.get_pressed()[2] and area_grid:
             pos2 = mousePos
+            mousePosX, mousePosY = mousePos
+            line.salvar_linhasY(mousePosX, mousePosY)
 
     # Desenhando os algoritmos na tela
     posX1, posY1 = pos1
     posX2, posY2 = pos2
-    grid = utils.algorithms.draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, BLACK, ROWS, PIXEL_SIZE)
+    grid = utils.algorithms.draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, BLACK, ROWS, PIXEL_SIZE, line)
 
     # Atualizar tela
     draw(WIN, grid, buttons)

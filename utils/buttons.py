@@ -1,6 +1,3 @@
-import asyncio
-import time
-
 from .settings import *
 import pygame
 
