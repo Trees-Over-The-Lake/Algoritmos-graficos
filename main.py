@@ -32,6 +32,10 @@ def draw_grid(win, grid):
         for i in range(COLS + 1):
             pygame.draw.line(win, INVERTED_BG_COLOR, (i * PIXEL_SIZE, 0), (i * PIXEL_SIZE, HEIGHT - TOOLBAR_HEIGHT))
 
+# Retorna se a função que está marcada é a de desenhar
+def podeDesenhar(algoritmo) -> bool:
+    return algoritmo == "DDA" or algoritmo == "Bresenham" or algoritmo == "Círculo"
+
 # Inicializando configurações básicas do pygame
 clock = pygame.time.Clock()   # Pegando um ponteiro para a função de clock do pygame
 grid = utils.init_grid()  # Colorindo o grid da cor inicial
@@ -51,6 +55,7 @@ buttons = [
 pos1 = (0, 0)  # Primeiro click do mouse
 pos2 = (0, 0)  # Click do mouse quando selecionado segundo ponto
 algorithm = "DDA"
+ultimo_botao = buttons[0]  # Último botão clicado
 line = Lines()
 run = True
 while run:
@@ -70,25 +75,30 @@ while run:
         if HEIGHT - TOOLBAR_HEIGHT <= mousePosY:
             area_grid = False
 
+
+
         # Verificando se o botão esquerdo do mouse foi clicado
         if pygame.mouse.get_pressed()[0]:
-            if area_grid:
-                pos1 = mousePos
-
             # Se o botão for clicado mudar algoritmo
             for button in buttons:
                 if button.clicked(mousePos):
                     algorithm = button.text
 
-                    if (button.text == "DDA" or button.text == "Bresenham" or button.text == "Círculo"):
-                        mousePosX, mousePosY = pos1
-                        line.salvar_linhasX(mousePosX, mousePosY, button.text)
+                    if podeDesenhar(button):
+                        ultimo_botao = button
 
                     if button.text == 'Limpar':
                         line = Lines()
                         pos1 = (0, 0)
                         pos2 = (0, 0)
                         grid = init_grid()
+
+        if pygame.mouse.get_pressed()[0] and area_grid and podeDesenhar(algorithm):
+            pos1 = mousePos
+            mousePosX, mousePosY = mousePos
+            line.salvar_linhasX(mousePosX, mousePosY, ultimo_botao.text)
+        elif pygame.mouse.get_pressed()[0] and area_grid:
+            pos1 = mousePos
 
         if pygame.mouse.get_pressed()[2] and area_grid:
             pos2 = mousePos

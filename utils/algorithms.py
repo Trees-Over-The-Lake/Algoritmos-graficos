@@ -1,7 +1,12 @@
+import time
+
 from .settings import *
 
 # Selecionando o algoritmo para exibir na tela
 def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_size, line):
+	#  Como posições são sempre floats, arredondarei para int
+	posX1, posX2, posY1, posY2 = int(posX1), int(posX2), int(posY1), int(posY2)
+
 	# Não fazer nada se for a primeira iteração
 	if posX1 > 0 and posX2 > 0 and posY1 > 0 and posY2 > 0:
 		grid = init_grid()
@@ -20,8 +25,10 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 
 		elif algorithm == "Liang Barsky":
 			clip = Clipping()
-			grid = clip.liangBarsky(posX1, posY1, grid, RED, rows, pixel_size, line)
+			grid = clip.liangBarsky(posX1, posY1, RED, rows, pixel_size, line, grid)
 
+	if not grid:
+		grid = init_grid()
 	return grid
 
 # Transformando uma posição do pygame em uma posição do grid
@@ -98,7 +105,7 @@ def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
 		return
 
 	# Calcular angulo da reta
-	slope = dy / dx
+	slope = dy // dx
 
 	if slope >= 1:
 		const1 = 2 * dx
@@ -297,7 +304,7 @@ class Clipping:
 
 			if r > self.t2:
 				isClipping = False
-			elif r > self.t2:
+			elif r > self.t1:
 				self.t1 = r
 
 		elif ponto1 > 0:
@@ -315,24 +322,33 @@ class Clipping:
 		return isClipping
 
 	#  Algoritmo de Liang Barsky para clipping
-	def liangBarsky(self, retanguloX, retanguloY, grid, color, rows, pixel_size, line):
+	def liangBarsky(self, retanguloX, retanguloY, color, rows, pixel_size, line, grid):
 		dx = line.pontoX2 - line.pontoX1
-		t1 = 0
-		t2 = 1
+		self.t1 = 0
+		self.t2 = 1
 
-		if self.testandoClipping(-dx, line.pontoX1 - self.x_min) and self.testandoClipping(dx, self.x_max - line.pontoX1):
-			dy = line.pontoY2 - line.pontoY1
+		pontoX1 = line.pontoX1
+		pontoY1 = line.pontoY1
+		pontoX2 = line.pontoX2
+		pontoY2 = line.pontoY2
+		if self.testandoClipping(-dx, pontoX1 - retanguloX) and self.testandoClipping(dx, retanguloX + 150 - pontoX1):
+			dy = pontoY2 - pontoY1
 
-			if self.testandoClipping(-dy, line.pontoY1 - self.y_min) and self.testandoClipping(dy, self.y_max - line.pontoY1):
-				if self.t2 < 1:
-					line.pontoX2 = line.pontoX1 + self.t2*dx
-					line.pontoY2 = line.pontoY1 + self.t2*dy
+			if self.testandoClipping(-dy, pontoY1 - retanguloY) and self.testandoClipping(dy, retanguloY + 100 - pontoY1):
+				if self.t2 < 1.0:
+					pontoX2 = int(pontoX1 + self.t2*dx)
+					pontoY2 = int(pontoY1 + self.t2*dy)
 
-				if self.t1 > 0:
-					line.pontoX1 += self.t1 * dy
-					line.pontoY1 += self.t1 * dy
+				if self.t1 > 0.0:
+					pontoX1 += int(self.t1 * dx)
+					pontoY1 += int(self.t1 * dy)
 
-		grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, color, rows, pixel_size)
+				if line.algoritmo == "Círculo":
+					#  To be implemented
+					pass
+				else:
+					grid = draw_lines(grid, line.algoritmo, pontoX1, pontoY1, pontoX2, pontoY2, color, rows, pixel_size, line)
+
 		return self.desenharRetangulo(retanguloX, retanguloY, BLUE, rows, grid, pixel_size, line)
 
 # Desenhar dentro do grid
@@ -342,6 +358,7 @@ def draw_in_grid(x, y, rows, pixel_size, grid, color):
 		draw_x, draw_y = get_row_col_from_pos((x, y), rows, pixel_size)
 		grid[int(draw_x)][int(draw_y)] = color
 	except IndexError:
-		print('Pixel desenhado fora da tela')
+		#print('Pixel desenhado fora da tela')
+		pass
 
 	return grid

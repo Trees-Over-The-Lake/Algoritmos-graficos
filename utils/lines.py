@@ -16,3 +16,6 @@ class Lines:
     def salvar_linhasY(self, ponto1, ponto2):
         self.pontoX2 = ponto1
         self.pontoY2 = ponto2
+
+    def toString(self):
+        return 'PontoX1: ' + str(self.pontoX1) + ' PontoX2: ' + str(self.pontoX2) + ' PontoY1: ' + str(self.pontoY1) + ' PontoY2: ' + str(self.pontoY2) + ' algoritmo: ' + str(self.algoritmo)
