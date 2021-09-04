@@ -90,7 +90,11 @@ def DDA(posX1, posY1, posX2, posY2, grid, color, rows, pixel_size):
 
 # Algoritmo de Brensenham para desenhar linha
 def bresenham(x1, y1, x2, y2, grid, color, rows, pixel_size):
-	if x2 > x1 or y2 > x1:
+	if x1 < x2 and y2 > x1:
+		x1, x2 = x2, x1
+		y1, y2 = y2, y1
+
+	elif x1 < x2 and y1 > y2:
 		x1, x2 = x2, x1
 		y1, y2 = y2, y1
 

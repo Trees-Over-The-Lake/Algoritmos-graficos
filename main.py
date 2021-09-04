@@ -56,6 +56,7 @@ pos1 = (0, 0)  # Primeiro click do mouse
 pos2 = (0, 0)  # Click do mouse quando selecionado segundo ponto
 algorithm = "DDA"
 ultimo_botao = buttons[0]  # Último botão clicado
+trocar_cor_botao = buttons[0]  # Trocar a cor dos botões
 line = Lines()
 run = True
 while run:
@@ -83,6 +84,11 @@ while run:
             for button in buttons:
                 if button.clicked(mousePos):
                     algorithm = button.text
+
+                    # Trocar as cores dos botões
+                    ultimo_botao.text_color = BLACK
+                    button.text_color = GREEN
+                    ultimo_botao = button
 
                     if podeDesenhar(button):
                         ultimo_botao = button
