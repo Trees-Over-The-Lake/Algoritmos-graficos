@@ -286,6 +286,11 @@ class Clipping:
 
 	#  Algoritmo de Cohen Sutherland para clipping
 	def cohenSutherland(self, retanguloX, retanguloY, color, rows, pixel_size, line, grid):
+		self.x_min = retanguloX
+		self.x_max = retanguloX + 150
+		self.y_min = retanguloY
+		self.y_max = retanguloY + 100
+
 		pontoX1 = line.pontoX1
 		pontoY1 = line.pontoY1
 		pontoX2 = line.pontoX2
@@ -317,20 +322,20 @@ class Clipping:
 
 				# Pontos de interseç�o
 				if (lado_fora & self.TOPO) != 0:
-					x = pontoX1 + (pontoX2 - pontoX1) * (retanguloY + 100) / (pontoY2 - pontoY1)
-					y = retanguloY + 100
+					x = pontoX1 + (pontoX2 - pontoX1) * (self.y_max - pontoY1) / (pontoY2 - pontoY1)
+					y = self.y_max
 
 				elif (lado_fora & self.ABAIXO) != 0:
-					x = pontoX1 + (pontoX2 - pontoX1) * retanguloY / (pontoY2 - pontoY1)
-					y = retanguloY
+					x = pontoX1 + (pontoX2 - pontoX1) * (self.y_min - pontoY1) / (pontoY2 - pontoY1)
+					y = self.y_min
 
 				elif (lado_fora & self.DIREITA) != 0:
-					y = pontoY1 + (pontoY2 - pontoY1) * (retanguloX + 150 - pontoX1) / (pontoX2 - pontoX1)
-					x = retanguloX + 150
+					y = pontoY1 + (pontoY2 - pontoY1) * (self.x_max - pontoX1) / (pontoX2 - pontoX1)
+					x = self.x_max
 
 				elif (lado_fora & self.ESQUERDA) != 0:
-					y = pontoY1 + (pontoY2 - pontoY1) * (retanguloX - pontoX1) / (pontoX2 - pontoX1)
-					x = retanguloX
+					y = pontoY1 + (pontoY2 - pontoY1) * (self.x_min - pontoX1) / (pontoX2 - pontoX1)
+					x = self.x_min
 
 				if lado_fora == lado1:
 					pontoX1 = x
@@ -343,10 +348,8 @@ class Clipping:
 					lado2 = self.qualLado(pontoX2, pontoY2)
 
 		if desenhar:
-			print('desenhaaaa')
-			grid = draw_lines(grid, line.algoritmo, pontoX1, pontoY1, pontoX2, pontoY2, color, rows, pixel_size, line)
+			grid = draw_lines(grid, line.algoritmo, pontoX1, pontoY1, pontoX2, pontoY2, RED, rows, pixel_size, line)
 		else:
-			print('N�o � pra desenhar!')
 			grid = init_grid()
 
 		return self.desenharRetangulo(retanguloX, retanguloY, BLUE, rows, grid, pixel_size, line)
