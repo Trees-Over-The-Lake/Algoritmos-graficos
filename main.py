@@ -52,11 +52,20 @@ buttons = [
     Button(520, button_y, 60, 50, WHITE, WHITE, "Limpar", BLACK)
 ]
 
+# Algoritmos de transformaç�o
+transformacoes = [
+    "Nenhum",
+    "Translaç�o",
+    "Rotaç�o",
+    "Outro"
+]
+
 pos1 = (0, 0)  # Primeiro click do mouse
 pos2 = (0, 0)  # Click do mouse quando selecionado segundo ponto
 algorithm = "DDA"
 ultimo_botao = buttons[0]  # Último botão clicado
 trocar_cor_botao = buttons[0]  # Trocar a cor dos botões
+transformacao = transformacoes[0]
 line = Lines()
 run = True
 while run:
@@ -75,8 +84,6 @@ while run:
         area_grid = True
         if HEIGHT - TOOLBAR_HEIGHT <= mousePosY:
             area_grid = False
-
-
 
         # Verificando se o botão esquerdo do mouse foi clicado
         if pygame.mouse.get_pressed()[0]:
@@ -110,6 +117,39 @@ while run:
             pos2 = mousePos
             mousePosX, mousePosY = mousePos
             line.salvar_linhasY(mousePosX, mousePosY)
+
+        # Eventos de teclado dentro do pygame
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LSHIFT:
+                # Se o bot�o j� tiver sido clicado desliga-lo
+                if transformacao == transformacoes[1]:
+                    transformacao = transformacoes[0]
+
+                else:
+                    BG_COLOR = RED
+                    transformacao = transformacoes[1]
+
+            elif event.key == pygame.K_LCTRL:
+                # Se o bot�o j� tiver sido clicado desliga-lo
+                if transformacao == transformacoes[2]:
+                    transformacao = transformacoes[0]
+
+                else:
+                    BG_COLOR = BLUE
+                    transformacao = transformacoes[2]
+
+            elif event.key == pygame.K_LALT:
+                # Se o bot�o j� tiver sido clicado desliga-lo
+                if transformacao == transformacoes[3]:
+                    transformacao = transformacoes[0]
+
+                else:
+                    BG_COLOR = GREEN
+                    transformacao = transformacoes[3]
+
+    # Desenhando o backgorund na tela
+    if transformacao == transformacoes[0]:
+        BG_COLOR = WHITE
 
     # Desenhando os algoritmos na tela
     posX1, posY1 = pos1

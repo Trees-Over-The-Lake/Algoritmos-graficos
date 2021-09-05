@@ -21,7 +21,7 @@ def draw_lines(grid, algorithm, posX1, posY1, posX2, posY2, color, rows, pixel_s
 
 		elif algorithm == "Cohen Sutherland":
 			clip = Clipping()
-			grid = clip.cohenSutherland(posX1, posY1, BLUE, rows, grid, pixel_size, line)
+			grid = clip.cohenSutherland(posX1, posY1, BLUE, rows, pixel_size, line, grid)
 
 		elif algorithm == "Liang Barsky":
 			clip = Clipping()
@@ -285,18 +285,71 @@ class Clipping:
 		return grid
 
 	#  Algoritmo de Cohen Sutherland para clipping
-	def cohenSutherland(self, x, y, color, rows, grid, pixel_size, line):
-		# Redesenhar a linha inicial
-		if line.algoritmo == "DDA":
-			grid = DDA(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
-		elif line.algoritmo == "Bresenham":
-			grid = bresenham(line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, grid, RED, rows, pixel_size)
-		elif line.algoritmo == "Círculo":
-			grid = draw_circle_bresenham(line.pontoX1, line.pontoY1, abs(line.pontoX2 - line.pontoX1), grid, RED, rows,
-										 pixel_size)
+	def cohenSutherland(self, retanguloX, retanguloY, color, rows, pixel_size, line, grid):
+		pontoX1 = line.pontoX1
+		pontoY1 = line.pontoY1
+		pontoX2 = line.pontoX2
+		pontoY2 = line.pontoY2
 
-		grid = self.desenharRetangulo(x, y, color, rows, grid, pixel_size, line)
-		return grid
+		lado1 = self.qualLado(pontoX1, pontoY1)
+		lado2 = self.qualLado(pontoX2, pontoY2)
+
+		desenhar = False
+		run = True
+
+		while run:
+			if lado1 == 0 and lado2 == 0:
+				desenhar = True
+				run = False
+
+			elif lado1 & lado2 != 0:
+				run = False
+
+			else:
+				# Algum segmento esta dentro do retangulo
+				lado_fora = 0
+				x = y = 0
+
+				if lado1 != 0:
+					lado_fora = lado1
+				else:
+					lado_fora = lado2
+
+				# Pontos de interseç�o
+				if (lado_fora & self.TOPO) != 0:
+					x = pontoX1 + (pontoX2 - pontoX1) * (retanguloY + 100) / (pontoY2 - pontoY1)
+					y = retanguloY + 100
+
+				elif (lado_fora & self.ABAIXO) != 0:
+					x = pontoX1 + (pontoX2 - pontoX1) * retanguloY / (pontoY2 - pontoY1)
+					y = retanguloY
+
+				elif (lado_fora & self.DIREITA) != 0:
+					y = pontoY1 + (pontoY2 - pontoY1) * (retanguloX + 150 - pontoX1) / (pontoX2 - pontoX1)
+					x = retanguloX + 150
+
+				elif (lado_fora & self.ESQUERDA) != 0:
+					y = pontoY1 + (pontoY2 - pontoY1) * (retanguloX - pontoX1) / (pontoX2 - pontoX1)
+					x = retanguloX
+
+				if lado_fora == lado1:
+					pontoX1 = x
+					pontoY1 = y
+					lado1 = self.qualLado(pontoX1, pontoY1)
+
+				else:
+					pontoX2 = x
+					pontoY2 = y
+					lado2 = self.qualLado(pontoX2, pontoY2)
+
+		if desenhar:
+			print('desenhaaaa')
+			grid = draw_lines(grid, line.algoritmo, pontoX1, pontoY1, pontoX2, pontoY2, color, rows, pixel_size, line)
+		else:
+			print('N�o � pra desenhar!')
+			grid = init_grid()
+
+		return self.desenharRetangulo(retanguloX, retanguloY, BLUE, rows, grid, pixel_size, line)
 
 	#  Testando o clipping
 	def testandoClipping(self, ponto1, ponto2) -> bool:
@@ -354,6 +407,30 @@ class Clipping:
 					grid = draw_lines(grid, line.algoritmo, pontoX1, pontoY1, pontoX2, pontoY2, color, rows, pixel_size, line)
 
 		return self.desenharRetangulo(retanguloX, retanguloY, BLUE, rows, grid, pixel_size, line)
+
+# Algoritmos de transformaç�o
+class Transformation:
+	# Funç�o de transformaç�o
+	def traslacao(self, x, y, line, rows, pixel_size, grid, color):
+		line.pontoX1 += x
+		line.pontoY1 += y
+
+		line.pontoX2 += x
+		line.pontoY2 += y
+
+		draw_lines(grid, line.algoritmo, line.pontoX1, line.pontoY1, line.pontoX2, line.pontoY2, color, rows, pixel_size, line)
+
+	# Funç�o para mudar a escala da linha
+	def escala(self, line, rows, pixel_size, grid, color):
+		pass
+
+	# Rotacionar a linha
+	def rotacao(self, line, rows, pixel_size, grid, color):
+		pass
+
+	# Refletir a linha
+	def reflexao(self, line, rows, pixel_size, grid, color):
+		pass
 
 # Desenhar dentro do grid
 def draw_in_grid(x, y, rows, pixel_size, grid, color):
